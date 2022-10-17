@@ -1,0 +1,148 @@
+## Ceph by using cephadm
+
+Create three VMs
+1- ceph0
+2- ceph1
+3- ceph2
+4- cephadm
+5- cephproxy
+
+HW:
+ disk0 : 36G rootvg
+ disk1 : 100GiB
+ disk2 : 100GiB
+ 
+ # divide rootfs on standard disk and ext2
+ /boot/efi   2GiB
+ /           15GiB
+ /var        15GiB
+ swap        4GiB
+
+two network (internal 10G and public network)
+
+ 
+ ## On cepadm
+ vi /etc/hosts
+ '
+172.16.1.39     cephadm cephadm.redcloud.land
+172.16.1.40     ceph0   ceph0.redcloud.land
+172.16.1.41     ceph1   ceph2.redcloud.land
+172.16.1.42     ceph2   ceph2.redcloud.land
+ '
+ scp /etc/hosts ceph0:/etc/hosts
+ scp /etc/hosts ceph1:/etc/hosts
+ scp /etc/hosts ceph2:/etc/hosts
+
+ dnf install ceph podman -y
+
+ ## on ceph0 & ceph1 & ceph2
+ dnf install podman -y 
+
+
+ #on cephadm
+ vi /etc/sysctl.d/99-ceph.conf
+ '
+net-ipv4.tcp.timestamps=0  
+ '
+
+scp /etc/sysctl.d/99-ceph.conf ceph0:/etc/sysctl.d/99-ceph.conf
+scp /etc/sysctl.d/99-ceph.conf ceph1:/etc/sysctl.d/99-ceph.conf
+scp /etc/sysctl.d/99-ceph.conf ceph2:/etc/sysctl.d/99-ceph.conf
+
+ssh ceph0 reboot
+ssh ceph1 reboot
+ssh ceph2 reboot
+
+## on cephproxy
+
+vi /etc/haproxy/haproxy.cfg
+'
+check on internet haproxy for ceph cluster
+'
+
+## on cephadm
+cephadm bootstrap --mon-ip 172.16.1.39  # the same VM
+
+'after download all images podman display all credential'
+
+
+ceph health
+
+
+ceph orch host label add cephadm  _admin
+
+ceph cephadm get-pub-key > ~/ceph.pub  
+ssh-copy-id -f -i ~/ceph.pub  root@172.16.1.40
+ssh-copy-id -f -i ~/ceph.pub  root@172.16.1.41
+ssh-copy-id -f -i ~/ceph.pub  root@172.16.1.42
+ssh-copy-id -f -i ~/ceph.pub  root@172.16.1.39
+
+
+ceph orch host add ceph0 172.16.1.40
+ceph orch host add ceph1 172.16.1.41
+ceph orch host add ceph2 172.16.1.42
+
+ceph orch host ls 
+'
+ceph0   172.16.1.40
+ceph1   172.16.1.41
+ceph2   172.16.1.42
+cephadm   172.16.1.39  _admin
+'
+
+ceph orch host label add ceph0 mgr  
+ceph orch host label add ceph2 mgr  
+
+ceph orch host ls 
+
+ceph orch label add ceph1 mon 
+ceph orch label add ceph2 mon 
+
+ceph orch label add cephadm mon
+ceph orch label add cephadm mgr 
+
+ceph orch host ls 
+'
+ceph0   172.16.1.40  mgr 
+ceph1   172.16.1.41  mon
+ceph2   172.16.1.42  mgr mon 
+cephadm 172.16.1.39  _admin mon mgr  
+'
+
+ceph orch apply mgr label:mgr 
+ceph orch apply mon label:mon  
+
+ceph orch ps 
+
+ceph orch ls 
+'ensure that all up & running'
+
+# can be choose between two way for add osd disks :
+1-
+ceph orch apply osd --all-available-devices
+
+2-
+
+ceph orch daemon add ceph0:/dev/sdb
+ceph orch daemon add ceph0:/dev/sdc  
+
+
+ceph orch daemon add ceph1:/dev/sdb
+ceph orch daemon add ceph1:/dev/sdc  
+
+
+ceph orch daemon add ceph2:/dev/sdb
+ceph orch daemon add ceph2:/dev/sdc  
+
+
+ceph orch device ls 
+
+'list of all disks'
+
+ceph osd tree 
+
+
+URL
+https://cephadm.redcloud.land:8443
+
+---------------------------------------------------------
