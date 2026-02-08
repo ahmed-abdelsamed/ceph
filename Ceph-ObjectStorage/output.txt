@@ -1,0 +1,25 @@
+Ceph Dashboard is now available at:
+
+             URL: https://node1:8443/
+            User: admin
+        Password: sf0h91ldbb
+
+Enabling client.admin keyring and conf on hosts with "admin" label
+Saving cluster configuration to /var/lib/ceph/4a27723a-f478-11f0-8b89-bc24111be1b0/config directory
+You can access the Ceph CLI as following in case of multi-cluster or non-default config:
+
+        sudo /usr/sbin/cephadm shell --fsid 4a27723a-f478-11f0-8b89-bc24111be1b0 -c /etc/ceph/ceph.conf -k /etc/ceph/ceph.client.admin.keyring
+
+Or, if you are only running a single cluster on this host:
+
+        sudo /usr/sbin/cephadm shell
+
+Please consider enabling telemetry to help improve Ceph:
+
+        ceph telemetry on
+
+For more information see:
+
+        https://docs.ceph.com/en/latest/mgr/telemetry/
+
+Bootstrap complete.
