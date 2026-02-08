@@ -1,1 +1,80 @@
 Update install ceph storage 
+Ceph Client:
+- Block  --> RBD
+- File   --> CephFS
+- Object --> RGW
+- S3     --> RGW
+- Swift  --> RGW
+
+Ceph-mon:
+- Monitor daemon that maintains a master copy of the cluster map.
+- Responsible for cluster membership and state.
+- Requires an odd number of monitors for quorum.
+- Typically deployed on separate nodes for high availability.
+Ceph-osd:
+- Object Storage Daemon that stores data as objects on storage nodes.
+- Handles data replication, recovery, backfilling, and rebalancing.
+- Each OSD daemon manages a single storage device (HDD/SSD).
+- Requires at least three OSDs for data replication and fault tolerance.
+Ceph-mds:
+- Metadata Server that manages the metadata for CephFS.
+- Handles file system operations like directory listings, file attributes, and permissions.
+- Typically deployed on separate nodes for scalability and performance.
+- Requires at least one MDS for CephFS to function.
+Ceph-rgw:
+- RADOS Gateway that provides object storage interfaces compatible with S3 and Swift.
+- Acts as a RESTful gateway for object storage operations.
+- Can be deployed on separate nodes or alongside other Ceph daemons.
+- Supports multi-tenancy and bucket policies.
+Ceph-mgr:
+- Manager daemon that provides additional monitoring and management capabilities.
+- Offers a web-based dashboard and REST API for cluster management.
+- Can run multiple instances for high availability.
+- Provides plugins for various functionalities like telemetry, monitoring, and orchestration.
+Ceph-crash:
+- Crash reporting daemon that collects and reports crash dumps from other Ceph daemons. 
+- Helps in diagnosing and troubleshooting issues within the cluster.
+- Can be deployed on all nodes running Ceph daemons.
+- Sends crash reports to a centralized crash collector for analysis.
+Ceph-rbd-mirror:
+- RBD Mirror daemon that provides block device mirroring for disaster recovery.
+- Continuously replicates RBD images between different Ceph clusters.
+- Requires at least one RBD Mirror daemon per cluster for mirroring to function.
+- Supports both asynchronous and synchronous mirroring modes.
+Ceph-fuse:
+- FUSE-based client that allows mounting CephFS as a file system on Linux.
+- Provides user-space access to CephFS without requiring kernel modules.
+- Suitable for development and testing environments.
+- Requires the Ceph client libraries to be installed on the client machine.
+Ceph-iscsi:
+- iSCSI Gateway that provides block storage access via the iSCSI protocol.
+- Allows non-Ceph clients to access RBD images as iSCSI targets.
+- Can be deployed on separate nodes or alongside other Ceph daemons.
+- Supports features like multipathing and CHAP authentication.
+Ceph-nfs:
+- NFS Gateway that provides NFS access to CephFS.
+- Allows NFS clients to mount CephFS as a standard NFS file system.
+- Can be deployed on separate nodes or alongside other Ceph daemons.
+- Supports NFSv3 and NFSv4 protocols.
+Ceph-dashboard:
+- Web-based management interface for monitoring and managing the Ceph cluster.
+- Provides real-time metrics, health status, and configuration options.
+- Can be accessed via a web browser.
+- Requires the Ceph-mgr daemon to be running for functionality.
+
+ceph PGs:
+- Placement Groups (PGs) are logical collections of objects within a Ceph cluster.
+- They help distribute data evenly across OSDs and improve performance.
+- Each PG maps to a set of OSDs based on the CRUSH algorithm. 
+- The number of PGs should be carefully planned based on the cluster size and workload.
+ceph CRUSH:
+- Controlled Replication Under Scalable Hashing (CRUSH) is an algorithm used by Ceph to determine data placement.
+- It allows Ceph to distribute data across OSDs in a scalable and efficient manner.
+- CRUSH maps data to OSDs based on rules defined in the CRUSH map.
+- It enables Ceph to handle dynamic changes in the cluster, such as adding or removing OSDs, without significant data movement.
+ceph pools:
+- Pools are logical partitions within a Ceph cluster that group objects for storage.
+- They provide a way to manage data replication, erasure coding, and placement policies.
+- Each pool can have its own set of rules for data placement and replication.
+- Pools can be created, modified, and deleted as needed to suit application requirements.
+
